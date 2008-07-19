@@ -29,7 +29,8 @@ end
 3) Run the migrations with `rake db:migrate`
 
 Usage
-=====
+-----
+
 1) Add the method call `has_rating` to your model.
 
 class Photo < ActiveRecord::Base
