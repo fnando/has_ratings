@@ -119,10 +119,59 @@ describe "has_ratings" do
     @beer.should be_rated(@user)
   end
   
-  it "should get rating average" do
+  it "should get not-cached rating average" do
     @beer.rate(:user => @user, :rating => 4)
     @beer.rate(:user => @another_user, :rating => 5)
     
-    @beer.rating_average.should == 4.5
+    @beer.rating!.should == 4.5
+  end
+  
+  it "should get cached rating average" do
+    @beer.rate(:user => @user, :rating => 4)
+    @beer.rate(:user => @another_user, :rating => 5)
+    @beer.reload
+    Rating.should_not_receive(:average)
+    @beer.rating.should == 4.5
+  end
+  
+  it "should set user from object" do
+    rating = @beer.rate(:user => @user, :rating => 4)
+    rating.user.should == @user
+  end
+  
+  it "should set user from id" do
+    rating = @beer.rate(:user_id => @user.id, :rating => 4)
+    rating.user.should == @user
+  end
+  
+  it "should update cached rating average if rating object is removed" do
+    @beer.rate(:user => @user, :rating => 4)
+    rating = @beer.rate(:user => @another_user, :rating => 5)
+    rating.destroy
+    @beer.reload
+    @beer.rating.should == 4.0
+  end
+  
+  it "should update counter" do
+    @beer.rate(:user => @user, :rating => 4)
+    @beer.rate(:user => @another_user, :rating => 5)
+    @beer.reload
+    @beer.ratings_count.should == 2
+  end
+  
+  it "should set named scopes" do
+    Beer.most_rated.proxy_options.should == {:order => 'ratings_count desc'}
+    Beer.best_rated.proxy_options.should == {:order => 'rating desc'}
+  end
+  
+  it "should return paginated users" do
+    User.delete_all
+    Array(30) do |i| 
+      user = User.create!(:name => "User #{i}")
+      @beer.rate(:user => user, :rating => 3)
+    end
+
+    @beer.find_users_that_rated(:page => 1).should == User.all(:limit => 10)
+    @beer.find_users_that_rated(:page => 2).should == User.all(:limit => 10, :offset => 10)
   end
 end

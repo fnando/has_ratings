@@ -11,6 +11,8 @@ module SimplesIdeias
       
       module ClassMethods
         def has_ratings
+          include SimplesIdeias::Acts::Ratings::InstanceMethods
+          
           self.has_rating_options = {
             :type => ActiveRecord::Base.send(:class_name_of_active_record_descendant, self).to_s
           }
@@ -18,7 +20,9 @@ module SimplesIdeias
           # associations
           has_many :ratings, :as => :rateable, :dependent => :destroy
           
-          include SimplesIdeias::Acts::Ratings::InstanceMethods
+          # named scopes
+          named_scope :best_rated, :order => 'rating desc'
+          named_scope :most_rated, :order => 'ratings_count desc'
         end
       end
       
@@ -32,7 +36,7 @@ module SimplesIdeias
           self.ratings.find(:first, :conditions => {:user_id => owner})
         end
         
-        def rating_average
+        def rating!
           Rating.average(:rating, {
             :conditions => {
               :rateable_type => self.class.has_rating_options[:type],
@@ -42,17 +46,22 @@ module SimplesIdeias
         end
         
         def rate(options)
+          options[:user_id] = options.delete(:user).id if options[:user]
           self.ratings.create(options)
         end
         
         def find_users_that_rated(options={})
           options = {
-            :limit => 20,
+            :limit => 10,
             :conditions => ["ratings.rateable_type = ? and ratings.rateable_id = ?", self.class.has_rating_options[:type], self.id],
             :include => :ratings
           }.merge(options)
 
-          User.find(:all, options)
+          if Object.const_defined?('Paginate')
+            User.paginate(options)
+          else
+            User.all(options)
+          end
         end
       end
     end
