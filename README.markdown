@@ -111,8 +111,8 @@ stars image at <http://f.simplesideias.com.br/stars.gif>. The CSS you need:
 		background: url(../images/stars.gif) no-repeat 0 0;
 	}
 
-	ul.none			{ background-position: 0 0; }
-	ul.half			{ background-position: 0 -16px; }
+	ul.zero			{ background-position: 0 0; }
+	ul.zero-half	{ background-position: 0 -16px; }
 	ul.one			{ background-position: 0 -32px; }
 	ul.one-half		{ background-position: 0 -48px; }
 	ul.two			{ background-position: 0 -64px; }
