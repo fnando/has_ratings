@@ -31,10 +31,10 @@ Instalation
 
 	class AddRatingToPhoto < ActiveRecord::Migration
 	  def self.up
-        add_column :photos, :integer,
+        add_column :photos, :ratings_count, :integer,
 		  :default => 0, :null => false
 	
-	    add_column :photos, :float,
+	    add_column :photos, :rating, :float,
 		  :precision => 3, 
 		  :scale => 2,
 		  :default => 0,
