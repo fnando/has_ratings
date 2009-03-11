@@ -79,7 +79,7 @@ module SimplesIdeias
               :rateable_type => self.class.has_rating_options[:type],
               :rateable_id => self.id
             }
-          })
+          }) || 0.0
         end
       
         def rate(options)

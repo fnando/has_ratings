@@ -133,6 +133,10 @@ describe "has_ratings" do
     Rating.should_not_receive(:average)
     @beer.rating.should == 4.5
   end
+
+  it "should never have a nil rating average" do
+    @beer.rating!.should_not == nil
+  end
   
   it "should set user from object" do
     rating = @beer.rate(:user => @user, :rating => 4)
