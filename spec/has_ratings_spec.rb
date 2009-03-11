@@ -135,7 +135,7 @@ describe "has_ratings" do
   end
 
   it "should never have a nil rating average" do
-    @beer.rating!.should_not == nil
+    @beer.rating!.should_not be_nil
   end
   
   it "should set user from object" do
