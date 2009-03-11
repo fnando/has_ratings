@@ -169,6 +169,8 @@ describe "has_ratings" do
   end
   
   it "should return paginated users" do
+    pending unless Object.const_defined?("Paginate")
+    
     User.delete_all
     Array(30) do |i| 
       user = User.create!(:name => "User #{i}")
